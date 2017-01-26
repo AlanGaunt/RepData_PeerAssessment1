@@ -1,23 +1,19 @@
 Loading required packages
 -------------------------
 
-``` r
-require(ggplot2)
-```
+    require(ggplot2)
 
     ## Loading required package: ggplot2
 
 Loading and preprocessing the data
 ----------------------------------
 
-``` r
-if(!file.exists("./data")){dir.create("./data")}
-fileUrl = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
-download.file(fileUrl, destfile = "./data/Activity-monitoring-data.zip")
+    if(!file.exists("./data")){dir.create("./data")}
+    fileUrl = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+    download.file(fileUrl, destfile = "./data/Activity-monitoring-data.zip")
 
-dl = unzip(zipfile = "./data/Activity-monitoring-data.zip", exdir = "./data")
-dt.Raw = read.csv(dl)
-```
+    dl = unzip(zipfile = "./data/Activity-monitoring-data.zip", exdir = "./data")
+    dt.Raw = read.csv(dl)
 
 What is the Mean total numbers of steps taken per day?
 ------------------------------------------------------
@@ -26,11 +22,9 @@ What is the Mean total numbers of steps taken per day?
 
 #### 1 - Calculating the total number of steps taken per day
 
-``` r
-dt.Steps = aggregate(list(Steps = dt.Raw$steps), by = list(Date = dt.Raw$date), FUN = sum, na.rm = TRUE)
+    dt.Steps = aggregate(list(Steps = dt.Raw$steps), by = list(Date = dt.Raw$date), FUN = sum, na.rm = TRUE)
 
-dt.Steps
-```
+    dt.Steps
 
     ##          Date Steps
     ## 1  2012-10-01     0
@@ -97,23 +91,17 @@ dt.Steps
 
 ### 2 - Creating a Histogram of total number of steps taken each day
 
-``` r
-hist(dt.Steps$Steps, breaks = seq(0,25000, by = 2500), col = "lightgreen", main = "Frequency of Steps per Day", xlab = "Steps per Day (Groups of 2500)", ylab = "Frequency")
-```
+    hist(dt.Steps$Steps, breaks = seq(0,25000, by = 2500), col = "lightgreen", main = "Frequency of Steps per Day", xlab = "Steps per Day (Groups of 2500)", ylab = "Frequency")
 
-![](PA1_template_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](PA1_template_files/figure-markdown_strict/unnamed-chunk-4-1.png)
 
 #### 3 - Calculating the mean & median number of steps per day
 
-``` r
-mean(dt.Steps$Steps)
-```
+    mean(dt.Steps$Steps)
 
     ## [1] 9354.23
 
-``` r
-median(dt.Steps$Steps)
-```
+    median(dt.Steps$Steps)
 
     ## [1] 10395
 
@@ -122,23 +110,17 @@ What is the average daily activity pattern?
 
 #### For this part of the assignment we're continuing to ignore missing values in the dataset
 
-``` r
-dt.DailyActivityPattern = aggregate(list(Steps = dt.Raw$steps), by = list(Interval = dt.Raw$interval), FUN = mean, na.rm = TRUE)
-```
+    dt.DailyActivityPattern = aggregate(list(Steps = dt.Raw$steps), by = list(Interval = dt.Raw$interval), FUN = mean, na.rm = TRUE)
 
 #### 1 - Making a time series plot of the average steps taken in every 5-minute interval
 
-``` r
-plot(dt.DailyActivityPattern$Interval, dt.DailyActivityPattern$Steps, type = "l", col = "lightgreen", main = "Avg. Steps per 5-minute Interval", xlab = "5-minute Intervals", ylab = "Avg. Steps Taken")
-```
+    plot(dt.DailyActivityPattern$Interval, dt.DailyActivityPattern$Steps, type = "l", col = "lightgreen", main = "Avg. Steps per 5-minute Interval", xlab = "5-minute Intervals", ylab = "Avg. Steps Taken")
 
-![](PA1_template_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](PA1_template_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
 #### 2 - Finding which interval, on average, has the maximum number of steps taken per day
 
-``` r
-dt.DailyActivityPattern[which.max(dt.DailyActivityPattern$Steps),]
-```
+    dt.DailyActivityPattern[which.max(dt.DailyActivityPattern$Steps),]
 
     ##     Interval    Steps
     ## 104      835 206.1698
@@ -148,50 +130,38 @@ Imputing missing values
 
 #### 1 - Calculating total number of missing values in the dataset
 
-``` r
-sum(is.na(dt.Raw$steps))
-```
+    sum(is.na(dt.Raw$steps))
 
     ## [1] 2304
 
 #### 2/3 - Replacing all missing values with the avg. steps of that interval
 
-``` r
-dt.NA = is.na(dt.Raw$steps)
-dt.AvgInterval = tapply(dt.Raw$steps, dt.Raw$interval, mean, na.rm = TRUE, simplify = TRUE)
-dt.Imputed = dt.Raw
-dt.Imputed$steps[dt.NA] = dt.AvgInterval[as.character(dt.Imputed$interval[dt.NA])]
-```
+    dt.NA = is.na(dt.Raw$steps)
+    dt.AvgInterval = tapply(dt.Raw$steps, dt.Raw$interval, mean, na.rm = TRUE, simplify = TRUE)
+    dt.Imputed = dt.Raw
+    dt.Imputed$steps[dt.NA] = dt.AvgInterval[as.character(dt.Imputed$interval[dt.NA])]
 
 #### Recalculating total number of missing values in the dataset
 
-``` r
-sum(is.na(dt.Imputed$steps))
-```
+    sum(is.na(dt.Imputed$steps))
 
     ## [1] 0
 
 #### 4a - Creating a Histogram of total number of steps taken each day
 
-``` r
-dt.StepsImputed = aggregate(list(Steps = dt.Imputed$steps), by = list(Date = dt.Imputed$date), FUN = sum, na.rm = TRUE)
+    dt.StepsImputed = aggregate(list(Steps = dt.Imputed$steps), by = list(Date = dt.Imputed$date), FUN = sum, na.rm = TRUE)
 
-hist(dt.StepsImputed$Steps, breaks = seq(0,25000, by = 2500), col = "lightgreen", main = "Frequency of Steps per Day", xlab = "Steps per Day (Groups of 2500)", ylab = "Frequency")
-```
+    hist(dt.StepsImputed$Steps, breaks = seq(0,25000, by = 2500), col = "lightgreen", main = "Frequency of Steps per Day", xlab = "Steps per Day (Groups of 2500)", ylab = "Frequency")
 
-![](PA1_template_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](PA1_template_files/figure-markdown_strict/unnamed-chunk-12-1.png)
 
 #### 4b - Calculating the mean & median number of steps per day
 
-``` r
-mean(dt.StepsImputed$Steps)
-```
+    mean(dt.StepsImputed$Steps)
 
     ## [1] 10766.19
 
-``` r
-median(dt.StepsImputed$Steps)
-```
+    median(dt.StepsImputed$Steps)
 
     ## [1] 10766.19
 
@@ -200,22 +170,18 @@ Are there differences in activity patterns between weekdays and weekends?
 
 #### 1 - Creating new variable "DateType"
 
-``` r
-dt.Dates = dt.Imputed
-dt.Dates$Day = weekdays(as.POSIXlt(dt.Imputed$date))
-dt.Dates$DateType = ifelse(dt.Dates$Day %in% c("Saturday","Sunday"),"Weekend", "Weekday")
-```
+    dt.Dates = dt.Imputed
+    dt.Dates$Day = weekdays(as.POSIXlt(dt.Imputed$date))
+    dt.Dates$DateType = ifelse(dt.Dates$Day %in% c("Saturday","Sunday"),"Weekend", "Weekday")
 
 #### 2 - Creating a panel plot with average number of steps taken per interval on Weekdays and Weekends
 
-``` r
-dt.DatesAgg = aggregate(data = dt.Dates, steps ~ interval + DateType, mean)
+    dt.DatesAgg = aggregate(data = dt.Dates, steps ~ interval + DateType, mean)
 
-ggplot(dt.DatesAgg, aes(interval, steps, color = DateType)) + 
-        geom_line() + 
-        facet_grid(DateType ~ .) +
-        xlab("5-minute Intervals") + 
-        ylab("Avg. Steps Taken")
-```
+    ggplot(dt.DatesAgg, aes(interval, steps, color = DateType)) + 
+            geom_line() + 
+            facet_grid(DateType ~ .) +
+            xlab("5-minute Intervals") + 
+            ylab("Avg. Steps Taken")
 
-![](PA1_template_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](PA1_template_files/figure-markdown_strict/unnamed-chunk-15-1.png)
